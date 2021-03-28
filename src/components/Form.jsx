@@ -29,12 +29,10 @@ const Form = (props) => {
       }
     });
 
-    return instance.ready.then((newFormio) => last(setFormio(newFormio), newFormio));
+    instance.ready.then((newFormio) => last(setFormio(newFormio), newFormio));
   }, []);
 
   useEffect(() => () => formio && formio.destroy(true), [formio]);
-
-  const { events } = options || {};
 
   const prevProps = useRef({});
 
@@ -52,11 +50,11 @@ const Form = (props) => {
     if (propChanged(submission, 'submission', prev))
       formio.submission = { data: submission };
 
-    if (propChanged(events, 'events', prev))
-      formio.options.events = Form.getDefaultEmitter();
+    if (propChanged(options, 'options', prev) && !options.events)
+      options.events = Form.getDefaultEmitter();
 
     if (propChanged(onFormReady, 'onFormReady', prev)) onFormReady(formio);
-  }, [url, src, form, submission, events, onFormReady, formio]);
+  }, [url, src, form, submission, options, onFormReady, formio]);
 
   return (
     <div id={id} ref={onElementMount} className={props.className} style={props.style} />
@@ -79,6 +77,8 @@ Form.propTypes = {
     i18n: PropTypes.object,
     template: PropTypes.string,
     saveDraft: PropTypes.bool,
+    // TODO: add events?
+    // events: PropTypes.???,
   }),
   onAny: PropTypes.func,
   onPrevPage: PropTypes.func,
